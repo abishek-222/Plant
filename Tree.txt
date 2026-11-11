@@ -1,0 +1,619 @@
+Experiment 1: Working with Widgets and Layouts
+
+
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FruitListScreen(),
+    );
+  }
+}
+
+// 1. Data Model
+class Fruit {
+  final String name;
+  final String price;
+  final IconData icon;
+
+  const Fruit(this.name, this.price, this.icon);
+}
+
+// 2. Main Screen with ListView
+class FruitListScreen extends StatelessWidget {
+  const FruitListScreen({super.key});
+
+  final List<Fruit> fruits = const [
+    Fruit('Apple', '\$2.50', Icons.apple),
+    Fruit('Banana', '\$1.20', Icons.eco),
+    Fruit('Orange', '\$3.00', Icons.circle),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Fruit Market')),
+      body: ListView.builder(
+        itemCount: fruits.length,
+        itemBuilder: (context, index) {
+          // Using reusable custom widget
+          return FruitCard(fruit: fruits[index]);
+        },
+      ),
+    );
+  }
+}
+
+// 3. Reusable Custom Widget (Card + Container + Row + Column)
+class FruitCard extends StatelessWidget {
+  final Fruit fruit;
+  const FruitCard({super.key, required this.fruit});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(fruit.icon, color: Colors.green, size: 30),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(fruit.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Fresh & Organic', style: TextStyle(color: Colors.grey)),
+                ],
+              ),
+            ),
+            Text(fruit.price, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Experiment 2: Adaptive and Responsive UI Design
+
+
+
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ResponsiveCatalogScreen(),
+    );
+  }
+}
+
+// 1. Product Model
+class Product {
+  final String title;
+  final String price;
+  final IconData icon;
+
+  const Product(this.title, this.price, this.icon);
+}
+
+// 2. Responsive Catalog Screen using LayoutBuilder
+class ResponsiveCatalogScreen extends StatelessWidget {
+  const ResponsiveCatalogScreen({super.key});
+
+  final List<Product> products = const [
+    Product('Laptop', '\$999', Icons.laptop),
+    Product('Headphones', '\$199', Icons.headphones),
+    Product('Smart Watch', '\$299', Icons.watch),
+    Product('Camera', '\$599', Icons.camera_alt),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Responsive Catalog')),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Responsive Breakpoint: 2 columns on Mobile, 4 columns on Tablet/Desktop
+          int columns = constraints.maxWidth < 600 ? 2 : 4;
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: products.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 0.8,
+            ),
+            itemBuilder: (context, index) {
+              return ProductCard(product: products[index]);
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+// 3. Reusable Product Card Widget
+class ProductCard extends StatelessWidget {
+  final Product product;
+  const ProductCard({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(product.icon, size: 48, color: Colors.blue),
+            const SizedBox(height: 12),
+            Text(product.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text(product.price, style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Experiment 3: Add Interactivity to App – Input and Forms
+
+
+
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: InteractiveSearchScreen(),
+    );
+  }
+}
+
+class InteractiveSearchScreen extends StatefulWidget {
+  const InteractiveSearchScreen({super.key});
+
+  @override
+  State<InteractiveSearchScreen> createState() => _InteractiveSearchScreenState();
+}
+
+class _InteractiveSearchScreenState extends State<InteractiveSearchScreen> {
+  // 1. Predefined products list
+  final List<String> _allProducts = [
+    'Sony Wireless Headphones',
+    'Apple iPad Air',
+    'Logitech Gaming Mouse',
+    'Dell 4K Monitor',
+    'Mechanical Keyboard',
+    'Bluetooth Speaker',
+  ];
+
+  // 2. Filtered list variable
+  List<String> _filteredProducts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredProducts = _allProducts;
+  }
+
+  // 3. Search filter method
+  void _filterSearch(String query) {
+    setState(() {
+      _filteredProducts = _allProducts
+          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Search & Filter Products')),
+      body: Column(
+        children: [
+          // Input Widget: TextField for live search
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              onChanged: _filterSearch,
+              decoration: InputDecoration(
+                labelText: 'Search products...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+          // Interactive List of results
+          Expanded(
+            child: _filteredProducts.isEmpty
+                ? const Center(child: Text('No products found'))
+                : ListView.builder(
+                    itemCount: _filteredProducts.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: const Icon(Icons.shopping_bag, color: Colors.purple),
+                        title: Text(_filteredProducts[index]),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+Experiment 4: Form Validation using Stateful Widgets
+
+
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MileageCalculatorScreen(),
+    );
+  }
+}
+
+class MileageCalculatorScreen extends StatefulWidget {
+  const MileageCalculatorScreen({super.key});
+
+  @override
+  State<MileageCalculatorScreen> createState() => _MileageCalculatorScreenState();
+}
+
+class _MileageCalculatorScreenState extends State<MileageCalculatorScreen> {
+  // 1. Form key for validation
+  final _formKey = GlobalKey<FormState>();
+
+  // 2. Controllers
+  final _startController = TextEditingController();
+  final _endController = TextEditingController();
+  final _fuelController = TextEditingController();
+
+  double? _mileage;
+
+  void _calculate() {
+    if (_formKey.currentState!.validate()) {
+      double start = double.parse(_startController.text);
+      double end = double.parse(_endController.text);
+      double fuel = double.parse(_fuelController.text);
+
+      setState(() {
+        _mileage = (end - start) / fuel;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Car Mileage Calculator')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // Starting Odometer
+              TextFormField(
+                controller: _startController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Starting Reading (km)'),
+                validator: (val) => val == null || val.isEmpty ? 'Enter start reading' : null,
+              ),
+              const SizedBox(height: 10),
+
+              // Ending Odometer
+              TextFormField(
+                controller: _endController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Ending Reading (km)'),
+                validator: (val) {
+                  if (val == null || val.isEmpty) return 'Enter end reading';
+                  double? end = double.tryParse(val);
+                  double? start = double.tryParse(_startController.text);
+                  if (end != null && start != null && end <= start) {
+                    return 'End reading must be greater than start';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+
+              // Fuel Consumed
+              TextFormField(
+                controller: _fuelController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Fuel Added (Liters)'),
+                validator: (val) {
+                  if (val == null || val.isEmpty) return 'Enter fuel volume';
+                  double? fuel = double.tryParse(val);
+                  if (fuel == null || fuel <= 0) return 'Fuel must be > 0';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+
+              ElevatedButton(
+                onPressed: _calculate,
+                child: const Text('Calculate Mileage'),
+              ),
+              const SizedBox(height: 20),
+
+              // Dynamic Output
+              if (_mileage != null)
+                Text(
+                  'Calculated Mileage: ${_mileage!.toStringAsFixed(2)} km/L',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+Experiment 5: Retrieve Information from Google Cloud Firestore based on Search Input
+
+
+
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FirestoreSearchScreen(),
+    );
+  }
+}
+
+class FirestoreSearchScreen extends StatefulWidget {
+  const FirestoreSearchScreen({super.key});
+
+  @override
+  State<FirestoreSearchScreen> createState() => _FirestoreSearchScreenState();
+}
+
+class _FirestoreSearchScreenState extends State<FirestoreSearchScreen> {
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
+    // 1. Build Firestore Query based on user search input
+    Query query = FirebaseFirestore.instance.collection('students');
+    if (_searchQuery.isNotEmpty) {
+      query = query
+          .where('name', isGreaterThanOrEqualTo: _searchQuery)
+          .where('name', isLessThanOrEqualTo: '$_searchQuery\uf8ff');
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Firestore Student Search')),
+      body: Column(
+        children: [
+          // 2. User Input Field
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              onChanged: (val) => setState(() => _searchQuery = val.trim()),
+              decoration: const InputDecoration(
+                labelText: 'Search student by name...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+
+          // 3. Dynamic StreamBuilder for Real-Time Firestore Retrieval
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: query.snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                final docs = snapshot.data?.docs ?? [];
+                if (docs.isEmpty) {
+                  return const Center(child: Text('No student records found'));
+                }
+
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final data = docs[index].data() as Map<String, dynamic>;
+                    return ListTile(
+                      leading: const Icon(Icons.person, color: Colors.orange),
+                      title: Text(data['name'] ?? ''),
+                      subtitle: Text('Roll: ${data['rollNo']} • Dept: ${data['department']}'),
+                      trailing: Text('CGPA: ${data['cgpa']}'),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+------------------------------------------------------------------------------------------------------------------
+
+
+Experiment 6: Update Existing Records in Google Cloud Firestore
+
+
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FirestoreUpdateScreen(),
+    );
+  }
+}
+
+class FirestoreUpdateScreen extends StatelessWidget {
+  const FirestoreUpdateScreen({super.key});
+
+  // 1. Method to update document in Firestore
+  void _updatePrice(BuildContext context, String docId, double currentPrice) {
+    final priceController = TextEditingController(text: currentPrice.toString());
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Update Price'),
+        content: TextField(
+          controller: priceController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'New Price (\$)'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              double? newPrice = double.tryParse(priceController.text);
+              if (newPrice != null) {
+                // Update specific document field in Firestore
+                await FirebaseFirestore.instance
+                    .collection('inventory')
+                    .doc(docId)
+                    .update({'price': newPrice});
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Update Firestore Records')),
+      // 2. StreamBuilder to display real-time records
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('inventory').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final docs = snapshot.data?.docs ?? [];
+          return ListView.builder(
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final doc = docs[index];
+              final data = doc.data() as Map<String, dynamic>;
+
+              return ListTile(
+                title: Text(data['name'] ?? ''),
+                subtitle: Text('Price: \$${data['price']} • Stock: ${data['stock']}'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.teal),
+                  onPressed: () => _updatePrice(context, doc.id, (data['price'] as num).toDouble()),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+------------------------------------------------------------------------------------------------------------
